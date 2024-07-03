@@ -28,6 +28,12 @@ QUESTIONS = {
         "enumerate(iterable, start=1)",
         "range(iterable)",
         "range(iterable, start=1)"
+    ],
+    "What's the official name of the := operator": [
+        "Assignment expression",
+        "Named expression",
+        "Walrus operator",
+        "Colon equals operator"
     ]
 }
 
@@ -40,9 +46,11 @@ for num, (question, alternatives) in enumerate(QUESTIONS.items(), start=1):
     labeled_alternatives = dict(zip(ascii_lowercase, sorted(alternatives)))
     for label, alternative in labeled_alternatives.items():
         print(f" {label}) {alternative}")
-        
-    answer_label = input("\nChoice? ")
-    answer = labeled_alternatives.get(answer_label)
+    
+    while (answer_label := input("\nChoice? ")) not in labeled_alternatives:
+        print(f"Please answer one of {', '.join(labeled_alternatives)}")
+
+    answer = labeled_alternatives[answer_label]
     if answer == correct_answer:
         num_correct += 1
         print("⭐ Correct! ⭐")
