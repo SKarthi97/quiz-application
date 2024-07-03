@@ -22,10 +22,17 @@ QUESTIONS = {
     ],
     "What does dict.get(key) return if key isn't found in dict": [
         "None", "key", "True", "False"
+    ],
+    "How do you iterate over both indices and elements in an iterable": [
+        "enumerate(iterable)",
+        "enumerate(iterable, start=1)",
+        "range(iterable)",
+        "range(iterable, start=1)"
     ]
 }
 
 
+num_correct = 0
 for num, (question, alternatives) in enumerate(QUESTIONS.items(), start=1):
     print(f"\nQuestion {num}:")
     print(f"{question}?")
@@ -37,7 +44,9 @@ for num, (question, alternatives) in enumerate(QUESTIONS.items(), start=1):
     answer_label = input("\nChoice? ")
     answer = labeled_alternatives.get(answer_label)
     if answer == correct_answer:
-        print("Correct!")
+        num_correct += 1
+        print("⭐ Correct! ⭐")
     else:
         print(f"THe answer is {correct_answer!r}, not {answer!r}")
         
+print(f"\nYou got {num_correct} correct out of {num} questions")
