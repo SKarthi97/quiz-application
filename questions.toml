@@ -82,3 +82,14 @@ alternatives = ["List", "Sequence", "Set"]
 question = "How can you run a Python script named quiz.py"
 answers = ["python quiz.py", "python -m quiz"]
 alternatives = ["python quiz", "python -m quiz.py"]
+hint = "One option uses the filename, and the other uses the module name."
+
+[[questions]]
+question = "What's a PEP"
+answers = ["A Python Enhancement Proposal"]
+alternatives = [
+    "A Pretty Exciting Policy",
+    "A Preciously Evolved Python",
+    "A Potentially Epic Prize",
+    ]
+hint = "PEPs are used to evolve Python."
