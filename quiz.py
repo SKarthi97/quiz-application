@@ -11,6 +11,9 @@ QUESTIONS = tomli.loads(QUESTIONS_PATH.read_text())
 
 
 def run_quiz():
+    """
+    Main function to run the quiz.
+    """
     # Preprocess
     questions = prepare_questions(QUESTIONS_PATH, num_questions=NUM_QUESTIONS_PER_QUIZ)
     
@@ -25,7 +28,15 @@ def run_quiz():
 
 
 def prepare_questions(path, num_questions):
-    topic_info = tomli.loads(path.read_text())
+    """
+    Prepares the questions for the quiz.
+    """
+    try:
+        topic_info = tomli.loads(path.read_text())
+    except Exception as e:
+        print(f"Error reading questions file: {e}")
+        return []
+    
     topics = {
         topic["label"]: topic["questions"] for topic in topic_info.values()
     }
@@ -40,33 +51,35 @@ def prepare_questions(path, num_questions):
 
 
 def ask_questions(question):
-    # pick out the correct answer from the list of alternatives
+    """
+    Asks a single question to the user and returns if the answer was correct.
+    """
     correct_answers = question["answers"]
-    # shuffle the alternatives
     alternatives = question["answers"] + question["alternatives"]
     ordered_alternatives = random.sample(alternatives, k=len(alternatives))
-    # print the question to the screen
-    # print all alternatives to the screen
-    # get the answer from the user
+
     answers = get_answers(
         question=question["question"],
         alternatives=ordered_alternatives,
         num_choices=len(correct_answers),
         hint=question.get("hint"),
     )
-    explanation = question.get("explanation")
+
     if correct := (set(answers) == set(correct_answers)):
         print("⭐ Correct! ⭐")
     else:
         is_or_are = " is" if len(correct_answers) == 1 else "s are"
         print("\n- ".join([f"No, the answer{is_or_are}:"] + correct_answers))
     
-    if "explanation" in question:
+    if explanation := question.get("explanation"):
         print(f"\nEXPLANATION:\n{question['explanation']}")
 
     return 1 if correct else 0
     
 def get_answers(question, alternatives, num_choices=1, hint=None):
+    """
+    Prompts the user for answers and returns their choices.
+    """
     print(f"{question}?")
     labeled_alternatives = dict(zip(ascii_lowercase, alternatives))
     if hint:
@@ -80,12 +93,10 @@ def get_answers(question, alternatives, num_choices=1, hint=None):
         answer = input(f"\nChoice{plural_s}? ")
         answers = set(answer.replace(",", " ").split())
 
-        # Handle hints
         if hint and "?" in answers:
             print(f"\nHINT: {hint}")
             continue
-        
-        # Handle invalid answers
+
         if len(answers) != num_choices:
             plural_s = "" if num_choices == 1 else "s, separated by comma"
             print(f"Please answer {num_choices} alternative{plural_s}")
