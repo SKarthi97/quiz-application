@@ -42,33 +42,64 @@ QUESTIONS = {
         "The random numbers are more random.",
         "The computer clock is reset.",
         "The first random number is always 42."
+    ],
+    "When does __name__ == '__main__' equal True in a Python file": [
+        "When the file is run as a script",
+        "When the file is imported as a module",
+        "When the file has a valid name",
+        "When the file only has one function",
     ]
 }
 
 
-num_questions = min(NUM_QUESTIONS_PER_QUIZ, len(QUESTIONS))
-questions = random.sample(list(QUESTIONS.items()), k=num_questions)
+def run_quiz():
+    # Preprocess
+    questions = prepare_questions(QUESTIONS, num_questions=NUM_QUESTIONS_PER_QUIZ)
+    
+    # Process (main loop)
+    num_correct = 0
+    for num, (question, alternatives) in enumerate(questions, start=1):
+        print(f"\nQuestion {num}:")
+        num_correct += ask_questions(question, alternatives)
+        
+    # Post process
+    print(f"\nYou got {num_correct} correct out of {num} questions")
 
 
-num_correct = 0
-for num, (question, alternatives) in enumerate(questions, start=1):
-    print(f"\nQuestion {num}:")
-    print(f"{question}?")
+def prepare_questions(questions, num_questions):
+    num_questions = min(num_questions, len(questions))
+    return random.sample(list(questions.items()), k=num_questions)
+
+
+def ask_questions(question, alternatives):
+    # pick out the correct answer from the list of alternatives
     correct_answer = alternatives[0]
-    labeled_alternatives = dict(
-        zip(ascii_lowercase, random.sample(alternatives, k=len(alternatives)))
-    )
+    # shuffle the alternatives
+    ordered_alternatives = random.sample(alternatives, k=len(alternatives))
+    # print the question to the screen
+    # print all alternatives to the screen
+    # get the answer from the user
+    answer = get_answer(question, ordered_alternatives)
+    # check that the user's answer is valid
+    # check whether the user answered correctly or not
+    # Add 1 to the count of correct answers if the answer is correct
+    if answer == correct_answer:
+        print("⭐ Correct! ⭐")
+        return 1
+    else:
+        print(f"The answer is {correct_answer!r}, not {answer!r}")
+        return 0
+    
+    
+def get_answer(question, alternatives):
+    print(f"\n{question}?")
+    labeled_alternatives = dict(zip(ascii_lowercase, alternatives))
     for label, alternative in labeled_alternatives.items():
         print(f" {label}) {alternative}")
-    
     while (answer_label := input("\nChoice? ")) not in labeled_alternatives:
         print(f"Please answer one of {', '.join(labeled_alternatives)}")
+    return labeled_alternatives[answer_label]
 
-    answer = labeled_alternatives[answer_label]
-    if answer == correct_answer:
-        num_correct += 1
-        print("⭐ Correct! ⭐")
-    else:
-        print(f"THe answer is {correct_answer!r}, not {answer!r}")
-        
-print(f"\nYou got {num_correct} correct out of {num} questions")
+
+if __name__ == "__main__":
+    run_quiz()
