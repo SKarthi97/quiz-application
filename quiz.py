@@ -1,74 +1,65 @@
 
 import random
 from string import ascii_lowercase
+import pathlib
+import tomli
+
 
 NUM_QUESTIONS_PER_QUIZ = 5
-QUESTIONS = {
-    "When was the first known use of the word 'quiz'": [
-        "1781", "1771", "1871", "1881"
-    ],
-    "Which built-in function can get information from the user": [
-        "input", "get", "print", "write"
-    ],
-    "Which keyword do you use to loop over a given list of elements": [
-        "for", "while", "each", "loop"
-    ],
-    "whats the purpose of the built-in zip() function": [
-        "To iterate over two or more sequences at the same time",
-        "To combine several strings into one",
-        "To compress several files into one archive",
-        "To get information from the user"
-    ],
-    "What's the name of Python's sorting algorithm": [
-        "Timsort", "Quicksort", "Merge sort", "Bubble sort"
-    ],
-    "What does dict.get(key) return if key isn't found in dict": [
-        "None", "key", "True", "False"
-    ],
-    "How do you iterate over both indices and elements in an iterable": [
-        "enumerate(iterable)",
-        "enumerate(iterable, start=1)",
-        "range(iterable)",
-        "range(iterable, start=1)"
-    ],
-    "What's the official name of the := operator": [
-        "Assignment expression",
-        "Named expression",
-        "Walrus operator",
-        "Colon equals operator"
-    ],
-    "What's one effect of calling random.seed(42)": [
-        "The random numbers are reproducible.",
-        "The random numbers are more random.",
-        "The computer clock is reset.",
-        "The first random number is always 42."
-    ]
-}
+QUESTIONS_PATH = pathlib.Path(__file__).parent / "questions.toml"
+QUESTIONS = tomli.loads(QUESTIONS_PATH.read_text())
 
 
-num_questions = min(NUM_QUESTIONS_PER_QUIZ, len(QUESTIONS))
-questions = random.sample(list(QUESTIONS.items()), k=num_questions)
+def run_quiz():
+    # Preprocess
+    questions = prepare_questions(QUESTIONS_PATH, num_questions=NUM_QUESTIONS_PER_QUIZ)
+    
+    # Process (main loop)
+    num_correct = 0
+    for num, question in enumerate(questions, start=1):
+        print(f"\nQuestion {num}:")
+        num_correct += ask_questions(question)
+        
+    # Post process
+    print(f"\nYou got {num_correct} correct out of {num} questions")
 
 
-num_correct = 0
-for num, (question, alternatives) in enumerate(questions, start=1):
-    print(f"\nQuestion {num}:")
-    print(f"{question}?")
-    correct_answer = alternatives[0]
-    labeled_alternatives = dict(
-        zip(ascii_lowercase, random.sample(alternatives, k=len(alternatives)))
-    )
+def prepare_questions(path, num_questions):
+    questions = tomli.loads(QUESTIONS_PATH.read_text())["questions"]
+    num_questions = min(num_questions, len(questions))
+    return random.sample(questions, k=num_questions)
+
+
+def ask_questions(question):
+    # pick out the correct answer from the list of alternatives
+    correct_answer = question["answer"]
+    # shuffle the alternatives
+    alternatives = [question["answer"]] + question["alternatives"]
+    ordered_alternatives = random.sample(alternatives, k=len(alternatives))
+    # print the question to the screen
+    # print all alternatives to the screen
+    # get the answer from the user
+    answer = get_answer(question["question"], ordered_alternatives)
+    # check that the user's answer is valid
+    # check whether the user answered correctly or not
+    # Add 1 to the count of correct answers if the answer is correct
+    if answer == correct_answer:
+        print("⭐ Correct! ⭐")
+        return 1
+    else:
+        print(f"The answer is {correct_answer!r}, not {answer!r}")
+        return 0
+    
+    
+def get_answer(question, alternatives):
+    print(f"\n{question}?")
+    labeled_alternatives = dict(zip(ascii_lowercase, alternatives))
     for label, alternative in labeled_alternatives.items():
         print(f" {label}) {alternative}")
-    
     while (answer_label := input("\nChoice? ")) not in labeled_alternatives:
         print(f"Please answer one of {', '.join(labeled_alternatives)}")
+    return labeled_alternatives[answer_label]
 
-    answer = labeled_alternatives[answer_label]
-    if answer == correct_answer:
-        num_correct += 1
-        print("⭐ Correct! ⭐")
-    else:
-        print(f"THe answer is {correct_answer!r}, not {answer!r}")
-        
-print(f"\nYou got {num_correct} correct out of {num} questions")
+
+if __name__ == "__main__":
+    run_quiz()
