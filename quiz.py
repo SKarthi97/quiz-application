@@ -32,34 +32,56 @@ def prepare_questions(path, num_questions):
 
 def ask_questions(question):
     # pick out the correct answer from the list of alternatives
-    correct_answer = question["answer"]
+    correct_answers = question["answers"]
     # shuffle the alternatives
-    alternatives = [question["answer"]] + question["alternatives"]
+    alternatives = question["answers"] + question["alternatives"]
     ordered_alternatives = random.sample(alternatives, k=len(alternatives))
     # print the question to the screen
     # print all alternatives to the screen
     # get the answer from the user
-    answer = get_answer(question["question"], ordered_alternatives)
-    # check that the user's answer is valid
-    # check whether the user answered correctly or not
-    # Add 1 to the count of correct answers if the answer is correct
-    if answer == correct_answer:
+    answers = get_answers(
+        question=question["question"],
+        alternatives=ordered_alternatives,
+        num_choices=len(correct_answers),
+    )
+    if set(answers) == set(correct_answers):
         print("⭐ Correct! ⭐")
         return 1
     else:
-        print(f"The answer is {correct_answer!r}, not {answer!r}")
+        is_or_are = " is" if len(correct_answers) == 1 else "s are"
+        print("\n- ".join([f"No, the answer{is_or_are}:"] + correct_answers))
         return 0
     
     
-def get_answer(question, alternatives):
-    print(f"\n{question}?")
+def get_answers(question, alternatives, num_choices=1):
+    print(f"{question}?")
     labeled_alternatives = dict(zip(ascii_lowercase, alternatives))
     for label, alternative in labeled_alternatives.items():
-        print(f" {label}) {alternative}")
-    while (answer_label := input("\nChoice? ")) not in labeled_alternatives:
-        print(f"Please answer one of {', '.join(labeled_alternatives)}")
-    return labeled_alternatives[answer_label]
+        print(f"  {label}) {alternative}")
 
+    while True:
+        plural_s = "" if num_choices == 1 else f"s (choose {num_choices})"
+        answer = input(f"\nChoice{plural_s}? ")
+        answers = set(answer.replace(",", " ").split())
+
+        # Handle invalid answers
+        if len(answers) != num_choices:
+            plural_s = "" if num_choices == 1 else "s, separated by comma"
+            print(f"Please answer {num_choices} alternative{plural_s}")
+            continue
+
+        if any(
+            (invalid := answer) not in labeled_alternatives
+            for answer in answers
+        ):
+            print(
+                f"{invalid!r} is not a valid choice. "
+                f"Please use {', '.join(labeled_alternatives)}"
+            )
+            continue
+
+        return [labeled_alternatives[answer] for answer in answers]
+    
 
 if __name__ == "__main__":
     run_quiz()
