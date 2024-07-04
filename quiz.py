@@ -12,32 +12,34 @@ QUESTIONS = tomli.loads(QUESTIONS_PATH.read_text())
 
 def run_quiz():
     # Preprocess
-    questions = prepare_questions(QUESTIONS, num_questions=NUM_QUESTIONS_PER_QUIZ)
+    questions = prepare_questions(QUESTIONS_PATH, num_questions=NUM_QUESTIONS_PER_QUIZ)
     
     # Process (main loop)
     num_correct = 0
-    for num, (question, alternatives) in enumerate(questions, start=1):
+    for num, question in enumerate(questions, start=1):
         print(f"\nQuestion {num}:")
-        num_correct += ask_questions(question, alternatives)
+        num_correct += ask_questions(question)
         
     # Post process
     print(f"\nYou got {num_correct} correct out of {num} questions")
 
 
-def prepare_questions(questions, num_questions):
+def prepare_questions(path, num_questions):
+    questions = tomli.loads(QUESTIONS_PATH.read_text())["questions"]
     num_questions = min(num_questions, len(questions))
-    return random.sample(list(questions.items()), k=num_questions)
+    return random.sample(questions, k=num_questions)
 
 
-def ask_questions(question, alternatives):
+def ask_questions(question):
     # pick out the correct answer from the list of alternatives
-    correct_answer = alternatives[0]
+    correct_answer = question["answer"]
     # shuffle the alternatives
+    alternatives = [question["answer"]] + question["alternatives"]
     ordered_alternatives = random.sample(alternatives, k=len(alternatives))
     # print the question to the screen
     # print all alternatives to the screen
     # get the answer from the user
-    answer = get_answer(question, ordered_alternatives)
+    answer = get_answer(question["question"], ordered_alternatives)
     # check that the user's answer is valid
     # check whether the user answered correctly or not
     # Add 1 to the count of correct answers if the answer is correct
