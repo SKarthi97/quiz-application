@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block header %}
+<div class="jumbotron jumbotron-fluid text-white text-center">
+    <div class="container">
+        <h1 class="display-4">Explore Our Quiz Categories</h1>
+        <p class="lead">Choose a category below to start exploring and testing your knowledge.</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        {% for category in object_list %}
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card quiz-card shadow-sm">
+                <div class="card-body d-flex flex-column align-items-center">
+                    <div class="icon mb-3">
+                        <i class="fas fa-book fa-3x text-dark"></i>
+                    </div>
+                    <h5 class="card-title text-center text-uppercase">{{ category.category }}</h5>
+                </div>
+                <div class="card-hover d-flex flex-column align-items-center">
+                    <p class="card-text text-center mb-3">Discover {{ category.category }} quizzes</p>
+                    <a href="{% url 'home-start' category.id %}" class="btn btn-outline-dark btn-start-quiz">Start Quiz</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+    /* Additional styles specific to this template can go here */
+    body {
+        font-family: 'Poppins', sans-serif;
+    }
+
+    /* Custom styles for jumbotron and quiz cards */
+    .jumbotron {
+        padding: 3rem 2rem;
+        background: linear-gradient(135deg, #000428, #004e92);
+        border-radius: 0;
+        margin-bottom: 0;
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    .quiz-card {
+        background-color: #f8f9fa;
+        border: none;
+        border-radius: 10px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .quiz-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 20px -10px rgba(0, 0, 0, 0.2);
+    }
+
+    .quiz-card .card-body {
+        padding: 20px;
+        text-align: center;
+    }
+
+    .quiz-card .icon {
+        font-size: 3rem;
+        color: #004e92;
+        margin-bottom: 15px;
+        transition: color 0.3s ease;
+    }
+
+    .quiz-card:hover .icon {
+        color: #000428;
+    }
+
+    .quiz-card .card-title {
+        font-weight: 600;
+        font-size: 1.5rem;
+    }
+
+    .quiz-card .card-hover {
+        background-color: rgba(0, 0, 0, 0.8);
+        color: #ffffff;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        padding: 20px;
+        border-radius: 10px;
+    }
+
+    .quiz-card:hover .card-hover {
+        opacity: 1;
+    }
+
+    .btn-start-quiz {
+        background-color: #ffffff;
+        border: 2px solid #004e92;
+        color: #004e92;
+        padding: 10px 20px;
+        font-size: 16px;
+        border-radius: 20px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    .btn-start-quiz:hover {
+        background-color: #004e92;
+        color: #ffffff;
+    }
+
+    /* Animation effects */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    /* Adding media query for better responsiveness */
+    @media (max-width: 767.98px) {
+        .quiz-card {
+            margin-bottom: 20px;
+        }
+    }
+
+    /* Smooth scroll reveal effect */
+    .row {
+        opacity: 0;
+        transform: translateY(20px);
+        animation: scrollReveal 1s forwards;
+    }
+
+    @keyframes scrollReveal {
+        to {
+            opacity: 1;
+            transform: none;
+        }
+    }
+
+    /* Glowing icon effect */
+    .icon {
+        position: relative;
+    }
+
+    .icon::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(0, 78, 146, 0.3);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.3s ease, height 0.3s ease;
+    }
+
+    .quiz-card:hover .icon::before {
+        width: 100px;
+        height: 100px;
+    }
+</style>
+{% endblock %}
