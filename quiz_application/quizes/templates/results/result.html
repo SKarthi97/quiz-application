@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="result-container">
+    <div class="result-card">
+        <div class="result-header">
+            <h1 class="result-title">Your Quiz Results</h1>
+            <div class="result-summary">
+                <p class="result-text">Score: <span>{{ score }}</span></p>
+                <p class="result-text">Percentage: <span>{{ percent }}%</span></p>
+                <p class="result-text">Time Taken: <span>{{ time }} seconds</span></p>
+            </div>
+        </div>
+        <div class="result-details">
+            <div class="result-stats">
+                <p class="result-text">Correct Answers: <span>{{ correct }}</span></p>
+                <p class="result-text">Incorrect Answers: <span>{{ wrong }}</span></p>
+                <p class="result-text">Total Questions: <span>{{ total }}</span></p>
+            </div>
+        </div>
+        <div class="result-footer">
+            <h5>All the best for the next quiz!</h5>
+            <a href="{% url 'category-list' %}" class="btn btn-return">Return to Main Menu</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(to right, #000428, #004e92);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        color: #ffffff;
+    }
+
+    .result-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        padding: 20px;
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    .result-card {
+        width: 100%;
+        max-width: 800px;
+        background: #ffffff;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        animation: slideUp 0.5s ease-in-out;
+    }
+
+    .result-header {
+        background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+        padding: 20px;
+    }
+
+    .result-title {
+        font-size: 36px;
+        color: #004e92;
+        margin-bottom: 10px;
+    }
+
+    .result-summary {
+        text-align: left;
+        color: #ffffff;
+        margin-bottom: 20px;
+    }
+
+    .result-summary .result-text {
+        font-size: 24px; /* Increased font size */
+        margin-bottom: 15px; /* Adjusted margin */
+    }
+
+    .result-summary .result-text span {
+        font-weight: bold;
+        color: #ffffff;
+    }
+
+    .result-details {
+        padding: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .result-stats {
+        text-align: left;
+        color: #333333;
+        flex: 1;
+    }
+
+    .result-stats .result-text {
+        font-size: 20px; /* Increased font size */
+        margin-bottom: 15px; /* Adjusted margin */
+    }
+
+    .result-stats .result-text span {
+        font-weight: bold;
+        color: #004e92;
+    }
+
+    .result-img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .result-footer {
+        background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%);
+        padding: 20px;
+    }
+
+    .result-footer h5 {
+        font-size: 24px; /* Increased font size */
+        color: #004e92;
+    }
+
+    .btn-return {
+        display: inline-block;
+        padding: 12px 24px;
+        margin-top: 20px;
+        font-size: 18px;
+        color: #004e92;
+        text-decoration: none;
+        background-color: transparent;
+        border: 2px solid #004e92;
+        border-radius: 5px;
+        transition: background-color 0.3s, color 0.3s, transform 0.3s;
+    }
+
+    .btn-return:hover {
+        background-color: #004e92;
+        color: #ffffff;
+        transform: translateY(-2px);
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideUp {
+        from {
+            transform: translateY(20px);
+        }
+        to {
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .result-card {
+            padding: 20px;
+        }
+
+        .result-summary .result-text {
+            font-size: 20px; /* Adjusted font size for smaller screens */
+            margin-bottom: 10px; /* Adjusted margin */
+        }
+
+        .result-stats .result-text {
+            font-size: 18px; /* Adjusted font size for smaller screens */
+            margin-bottom: 10px; /* Adjusted margin */
+        }
+
+        .result-footer h5 {
+            font-size: 20px; /* Adjusted font size for smaller screens */
+        }
+    }
+</style>
+
+{% endblock %}

@@ -1,0 +1,288 @@
+{% extends "base.html" %}
+
+{% block header %}
+    <h1>Quizzes</h1>
+{% endblock %}
+
+{% block content %}
+<div class="quiz-container">
+    <div class="quiz-header">
+        <div class="welcome-message">
+            <h2>Welcome to <span class="quiz-title">Quiz</span></h2>
+            <p>Choose the correct answer and proceed to the next question. Good luck!</p>
+        </div>
+        <div class="timer">
+            <svg class="timer-svg" viewBox="0 0 100 100">
+                <circle class="timer-circle" cx="50" cy="50" r="45"></circle>
+                <text class="timer-text" x="50%" y="50%">00:00</text>
+            </svg>
+        </div>
+    </div>
+
+    <div class="quiz-card">
+        <div class="quiz-question">
+            <h3>{{ question.question }}</h3>
+        </div>
+        <form id="quizForm" method='post' action="{% url 'home' category_id=category_id question_id=question_id %}">
+            {% csrf_token %}
+            <div class="answers">
+                {% for answer in answers %}
+                    <label class="answer-option {% if answer == selected_answer %}selected{% endif %}">
+                        <input class="answer-input" type="radio" name="answer" id="answer_{{ forloop.counter }}" value="{{ answer }}" {% if answer == selected_answer %} checked {% endif %}>
+                        <span class="answer-text">{{ answer }}</span>
+                    </label>
+                {% endfor %}
+            </div>
+            <input type="hidden" name="category_id" value="{{ category_id }}">
+            <input type="hidden" name="question_id" value="{{ question_id }}">
+            <input id='timer' type='hidden' name="timer" value="">
+            <br>
+            {% if next_question_id %}
+                <button type="submit" class="btn btn-primary">Next</button>
+            {% else %}
+                <button type="submit" class="btn btn-primary">Submit</button>
+            {% endif %}
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    // Highlight selected answer
+    const answerOptions = document.querySelectorAll('.answer-option');
+    
+    answerOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            // Remove 'selected' class from all options
+            answerOptions.forEach(opt => opt.classList.remove('selected'));
+            
+            // Add 'selected' class to the clicked option
+            this.classList.add('selected');
+        });
+    });
+
+    const timerText = document.querySelector('.timer-text');
+    let totalTime = 0;
+    let timerInterval;
+
+    function startTimer() {
+        timerInterval = setInterval(() => {
+            totalTime++;
+            const minutes = Math.floor(totalTime / 60).toString().padStart(2, '0');
+            const seconds = (totalTime % 60).toString().padStart(2, '0');
+            timerText.textContent = `${minutes}:${seconds}`;
+            document.getElementById('timer').value = totalTime;
+        }, 1000);
+    }
+
+    startTimer();
+
+    // Optional: Add styling and animations for timer circle
+    const timerCircle = document.querySelector('.timer-circle');
+    const timerSVG = document.querySelector('.timer-svg');
+    const radius = timerCircle.r.baseVal.value;
+    const circumference = radius * 2 * Math.PI;
+
+    timerCircle.style.strokeDasharray = `${circumference} ${circumference}`;
+    timerCircle.style.strokeDashoffset = circumference;
+
+    function setTimerProgress(percent) {
+        const offset = circumference - percent / 100 * circumference;
+        timerCircle.style.strokeDashoffset = offset;
+    }
+</script>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(to right, #000428, #004e92);
+        color: #ffffff;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0;
+    }
+
+    .quiz-container {
+        max-width: 800px;
+        width: 100%;
+        background-color: rgba(255, 255, 255, 0.95);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        animation: fadeIn 1s ease-in-out;
+    }
+
+    .quiz-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 40px; /* Increased margin for spacious layout */
+    }
+
+    .welcome-message {
+        text-align: left;
+        flex-grow: 1;
+    }
+
+    .welcome-message h2 {
+        font-size: 36px;
+        margin-bottom: 10px;
+        color: #343a40;
+    }
+
+    .welcome-message .quiz-title {
+        color: #28a745; /* Green color for emphasis */
+    }
+
+    .welcome-message p {
+        font-size: 18px;
+        color: #6c757d;
+    }
+
+    .timer {
+        font-size: 20px;
+        color: #343a40;
+        background-color: #ffffff;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        align-items: center;
+    }
+
+    .timer-svg {
+        width: 80px;
+        height: 80px;
+    }
+
+    .timer-circle {
+        fill: none;
+        stroke: #28a745; /* Green stroke color */
+        stroke-width: 4;
+        stroke-linecap: round;
+        transform: rotate(-90deg);
+        transform-origin: 50% 50%;
+        transition: stroke-dashoffset 0.3s ease-in-out;
+    }
+
+    .timer-text {
+        font-size: 24px;
+        font-weight: bold;
+        fill: #343a40;
+        dominant-baseline: central;
+        text-anchor: middle;
+    }
+
+    .quiz-card {
+        background: linear-gradient(135deg, #000428, #004e92);
+        border-radius: 8px;
+        padding: 30px; /* Increased padding for spacious layout */
+        margin-bottom: 40px; /* Increased margin for spacious layout */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        position: relative;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .quiz-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 20px -10px rgba(0, 0, 0, 0.2);
+    }
+
+    .quiz-question {
+        margin-bottom: 30px; /* Increased margin for spacious layout */
+    }
+
+    .quiz-question h3 {
+        font-size: 28px; /* Increased font size for spacious layout */
+        color: #ffffff;
+    }
+
+    .answers {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px; /* Increased gap for spacious layout */
+        margin-top: 30px; /* Increased margin for spacious layout */
+    }
+
+    .answer-option {
+        background-color: #ffffff;
+        border: 1px solid #ced4da;
+        border-radius: 8px; /* Increased border-radius for rounded corners */
+        padding: 20px; /* Increased padding for spacious layout */
+        cursor: pointer;
+        transition: background-color 0.3s, border-color 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: #343a40;
+    }
+
+    .answer-option.selected {
+        background-color: #28a745;
+        border-color: #28a745;
+        color: #ffffff;
+    }
+
+    .answer-option:hover {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: #ffffff;
+    }
+
+    .answer-input {
+        display: none;
+    }
+
+    .answer-text {
+        font-size: 18px; /* Increased font size for spacious layout */
+        margin-left: 10px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(to right, #4facfe, #00f2fe); /* Gradient background */
+        border: none; /* Remove default border */
+        color: #fff; /* White text color */
+        padding: 16px 32px; /* Increased padding for the button */
+        border-radius: 30px; /* Rounded corners */
+        cursor: pointer; /* Pointer cursor on hover */
+        transition: all 0.3s ease-in-out; /* Smooth transition for hover effects */
+        font-size: 18px; /* Increased font size for spacious layout */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(to right, #00f2fe, #4facfe); /* Reverse gradient on hover */
+        box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2); /* Slightly larger shadow on hover */
+        transform: translateY(-2px); /* Slight lift on hover */
+    }
+
+    .btn-primary:active {
+        transform: translateY(0); /* Reset lift on click */
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow on click */
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .answers {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
