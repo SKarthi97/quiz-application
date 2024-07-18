@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Quiz Application</title>
+        {% load bootstrap5 %}
+        {% bootstrap_css %}
+        {% bootstrap_javascript %}
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="">
+        {% block extra_styles %}
+        {% endblock %}
+    </head>
+    <body>
+        <header>
+            {% block header %}
+                {% comment %} <h1>Front Page</h1> {% endcomment %}
+            {% endblock %}
+        </header>
+        <main>
+            <div class="container">
+            {% block content %}
+                Welcome to Quiz Application !
+            {% endblock %}
+            </div>
+        </main>
+        <script src="" async defer></script>
+        {% block script %}
+        {% endblock %}
+    </body>
+</html>
